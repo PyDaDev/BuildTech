@@ -8,9 +8,33 @@
   --color-accent: #ffc83d;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
   background: var(--color-night);
   color: white;
+  overflow-x: hidden;
+}
+
+/* Evita el zoom automático de iOS en campos de formulario */
+select,
+input,
+textarea {
+  font-size: 16px;
+}
+
+/* Quita el resaltado azul al tocar en móviles */
+button {
+  -webkit-tap-highlight-color: transparent;
 }

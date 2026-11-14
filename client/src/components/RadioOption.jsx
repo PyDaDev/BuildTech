@@ -5,7 +5,7 @@ export default function RadioOption({ label, selected, onSelect }) {
       role="radio"
       aria-checked={selected}
       onClick={onSelect}
-      className={`flex w-full items-center gap-4 rounded-xl px-4 py-3 text-left text-base font-medium transition sm:text-lg ${
+      className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-4 py-2.5 text-left text-base font-medium transition sm:gap-4 sm:py-3 sm:text-lg ${
         selected
           ? 'bg-brand text-white shadow-lg shadow-brand/40'
           : 'bg-white/95 text-slate-800 hover:bg-white'

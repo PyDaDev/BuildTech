@@ -1,5 +1,5 @@
-import { ShoppingCart, ArrowRight, ArrowLeft } from 'lucide-react'
-import Logo from './Logo'
+import { ArrowRight, ArrowLeft } from 'lucide-react'
+import SiteLayout from './SiteLayout'
 import Stepper from './Stepper'
 
 export default function WizardLayout({
@@ -13,43 +13,25 @@ export default function WizardLayout({
   children,
 }) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-night via-[#140f3d] to-[#2a1070]">
-      {/* Resplandor decorativo */}
-      <div className="pointer-events-none absolute -right-32 top-20 h-96 w-96 rounded-full bg-brand/30 blur-3xl" />
-
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-5 sm:px-8">
-        {/* Encabezado */}
-        <header className="flex items-center justify-between">
-          <Logo />
-          <button
-            aria-label="Carrito"
-            className="rounded-full p-2 hover:bg-white/10"
-          >
-            <ShoppingCart className="h-6 w-6" />
-          </button>
-        </header>
-
+    <SiteLayout>
+      <div className="flex flex-1 flex-col pt-5 sm:pt-6">
         {/* Stepper */}
-        {showStepper && (
-          <div className="mt-6">
-            <Stepper current={step} />
-          </div>
-        )}
+        {showStepper && <Stepper current={step} />}
 
         {/* Contenido de cada pantalla */}
         <div className="flex flex-1 flex-col">{children}</div>
 
-        {/* Pie: paso y botones */}
-        <footer className="mt-5 flex items-center justify-between">
-          <span className="text-lg font-semibold">
+        {/* Paso actual y botones del asistente */}
+        <div className="mt-4 flex items-center justify-between gap-3 sm:mt-5">
+          <span className="text-base font-semibold sm:text-lg">
             {step} / {total}
           </span>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {onBack && (
               <button
                 onClick={onBack}
-                className="flex items-center gap-2 rounded-xl px-4 py-3 font-semibold text-slate-200 transition hover:bg-white/10"
+                className="flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/10 sm:gap-2 sm:px-4 sm:text-base"
               >
                 <ArrowLeft className="h-5 w-5" /> Atrás
               </button>
@@ -57,13 +39,13 @@ export default function WizardLayout({
             <button
               onClick={onNext}
               disabled={nextDisabled}
-              className="flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-bold tracking-wide transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-11 items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-bold tracking-wide transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-6 sm:text-base"
             >
               {nextLabel} <ArrowRight className="h-5 w-5" />
             </button>
           </div>
-        </footer>
+        </div>
       </div>
-    </div>
+    </SiteLayout>
   )
 }
