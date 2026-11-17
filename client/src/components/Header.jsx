@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingCart, Menu, X, Phone, Mail } from 'lucide-react'
+import { ShoppingCart, Menu, X, Phone, Mail, Lock } from 'lucide-react'
 import Logo from './Logo'
 import { useCart } from '../context/CartContext'
 import { CONTACTO } from '../config'
 
 const RUTAS_ASISTENTE = [
-  '/',
+  '/asistente',
   '/presupuesto',
   '/recomendacion',
   '/personalizar',
@@ -14,8 +14,17 @@ const RUTAS_ASISTENTE = [
 ]
 
 const enlaces = [
-  { to: '/', etiqueta: 'Armar mi PC', activo: (ruta) => RUTAS_ASISTENTE.includes(ruta) },
-  { to: '/perifericos', etiqueta: 'Periféricos', activo: (ruta) => ruta.startsWith('/perifericos') },
+  { to: '/', etiqueta: 'Inicio', activo: (ruta) => ruta === '/' },
+  {
+    to: '/asistente',
+    etiqueta: 'Armar mi PC',
+    activo: (ruta) => RUTAS_ASISTENTE.includes(ruta),
+  },
+  {
+    to: '/perifericos',
+    etiqueta: 'Periféricos',
+    activo: (ruta) => ruta.startsWith('/perifericos'),
+  },
   { href: '#contacto', etiqueta: 'Contacto' },
 ]
 
@@ -53,6 +62,8 @@ export default function Header() {
   const { cantidad, abrir } = useCart()
   const [menuAbierto, setMenuAbierto] = useState(false)
 
+  const enAdmin = pathname.startsWith('/admin')
+
   // Cerrar el menú móvil con Escape
   useEffect(() => {
     if (!menuAbierto) return
@@ -89,6 +100,18 @@ export default function Header() {
               <Mail className="h-3.5 w-3.5" />
               {CONTACTO.email}
             </a>
+            <Link
+              to="/admin"
+              aria-current={enAdmin ? 'page' : undefined}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-0.5 font-semibold transition ${
+                enAdmin
+                  ? 'border-brand bg-brand text-white'
+                  : 'border-white/25 hover:border-brand hover:bg-brand hover:text-white'
+              }`}
+            >
+              <Lock className="h-3.5 w-3.5" />
+              Administración
+            </Link>
           </div>
         </div>
       </div>
@@ -155,6 +178,23 @@ export default function Header() {
                   />
                 </li>
               ))}
+
+              {/* Acceso al panel de administración */}
+              <li className="mt-2 border-t border-white/10 pt-2">
+                <Link
+                  to="/admin"
+                  onClick={cerrarMenu}
+                  aria-current={enAdmin ? 'page' : undefined}
+                  className={`flex min-h-12 items-center gap-2 rounded-xl px-4 text-base font-semibold transition ${
+                    enAdmin
+                      ? 'bg-brand/20 text-white'
+                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <Lock className="h-5 w-5" />
+                  Administración
+                </Link>
+              </li>
             </ul>
           </nav>
         )}

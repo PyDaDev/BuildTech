@@ -19,7 +19,7 @@ export default function Budget() {
   return (
     <WizardLayout
       step={2}
-      onBack={() => navigate('/')}
+      onBack={() => navigate('/asistente')}
       onNext={() => navigate('/recomendacion')}
     >
       <main className="grid flex-1 items-center gap-8 py-8 lg:grid-cols-2">

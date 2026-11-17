@@ -11,11 +11,11 @@ import {
 } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import QuoteModal from './QuoteModal'
-import { construirMensajeCarrito, enlaceWhatsApp, USOS } from '../utils/quote'
+import { construirMensajeCarrito, USOS } from '../utils/quote'
+import { solicitarCotizacion } from '../utils/api'
 import { MAX_UNIDADES } from '../utils/cart'
 import { categoriaDe } from '../data/peripherals'
 import { formatCOP } from '../utils/format'
-import { WHATSAPP_NUMBER } from '../config'
 
 export default function CartDrawer() {
   const {
@@ -59,7 +59,7 @@ export default function CartDrawer() {
 
   const enviarCotizacion = (cliente) => {
     const texto = construirMensajeCarrito({ cliente, items, total })
-    window.open(enlaceWhatsApp(WHATSAPP_NUMBER, texto), '_blank', 'noopener')
+    solicitarCotizacion({ cliente, texto, total, cantidad })
   }
 
   return (
@@ -114,7 +114,7 @@ export default function CartDrawer() {
               </p>
               <div className="mt-2 flex w-full max-w-xs flex-col gap-2">
                 <button
-                  onClick={() => irA('/')}
+                  onClick={() => irA('/asistente')}
                   className="min-h-12 rounded-xl bg-brand px-6 font-bold text-white transition hover:bg-brand-dark"
                 >
                   Armar mi PC
@@ -262,7 +262,7 @@ export default function CartDrawer() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => irA('/')}
+                    onClick={() => irA('/asistente')}
                     className="min-h-11 rounded-xl border-2 border-brand text-sm font-bold text-brand transition hover:bg-brand hover:text-white"
                   >
                     Armar otro PC

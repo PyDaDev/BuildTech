@@ -9,9 +9,9 @@ import { useCart } from '../context/CartContext'
 import { servicios as catalogo } from '../data/services'
 import { recomendar } from '../utils/recommend'
 import { aSeleccion } from '../utils/build'
-import { construirMensaje, enlaceWhatsApp } from '../utils/quote'
+import { construirMensaje } from '../utils/quote'
+import { solicitarCotizacion } from '../utils/api'
 import { formatCOP } from '../utils/format'
-import { WHATSAPP_NUMBER } from '../config'
 
 export default function Services() {
   const { uso, presupuesto, configuracion, servicios, setServicios } = useWizard()
@@ -43,7 +43,7 @@ export default function Services() {
       totalServicios,
       totalFinal,
     })
-    window.open(enlaceWhatsApp(WHATSAPP_NUMBER, texto), '_blank', 'noopener')
+    solicitarCotizacion({ cliente, texto, total: totalFinal, cantidad: 1 })
   }
 
   const agregarAlCarrito = () => {

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, MessageCircle, Lock } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { CONTACTO, NOMBRE_TIENDA, WHATSAPP_NUMBER } from '../config'
 
@@ -42,6 +42,11 @@ export default function Footer() {
             <ul className="space-y-1 text-sm">
               <li>
                 <Link to="/" className={enlaceClase}>
+                  Inicio
+                </Link>
+              </li>
+              <li>
+                <Link to="/asistente" className={enlaceClase}>
                   Armar mi PC
                 </Link>
               </li>
@@ -141,11 +146,20 @@ export default function Footer() {
         </div>
 
         {/* Franja inferior */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-2 border-t border-white/10 py-5 text-center text-xs text-slate-400 sm:flex-row sm:text-left">
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 py-5 text-center text-xs text-slate-400 sm:flex-row sm:text-left">
           <p>
             © {anio} {NOMBRE_TIENDA}. Todos los derechos reservados.
           </p>
-          <p>Proyecto académico · Los precios son referenciales.</p>
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
+            <p>Proyecto académico · Los precios son referenciales.</p>
+            <Link
+              to="/admin"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-white/20 px-4 font-semibold text-slate-300 transition hover:border-brand hover:bg-brand hover:text-white"
+            >
+              <Lock className="h-3.5 w-3.5" />
+              Administración
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

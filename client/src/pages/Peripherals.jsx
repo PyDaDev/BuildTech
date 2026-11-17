@@ -175,7 +175,7 @@ export default function Peripherals() {
             </p>
           </div>
           <Link
-            to="/"
+            to="/asistente"
             className="flex min-h-12 shrink-0 items-center justify-center rounded-xl bg-brand px-6 font-bold tracking-wide transition hover:bg-brand-dark"
           >
             ARMAR MI PC
