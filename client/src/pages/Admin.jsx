@@ -9,6 +9,9 @@ import {
   Inbox,
   AlertTriangle,
   Loader2,
+  MapPin,
+  Banknote,
+  Landmark,
 } from 'lucide-react'
 import SiteLayout from '../components/SiteLayout'
 import {
@@ -29,6 +32,19 @@ const ESTADOS = [
 
 const estadoDe = (id) => ESTADOS.find((e) => e.id === id) ?? ESTADOS[0]
 
+const PAGOS = {
+  efectivo: {
+    etiqueta: 'Efectivo',
+    icon: Banknote,
+    clase: 'bg-emerald-100 text-emerald-800',
+  },
+  transferencia: {
+    etiqueta: 'Transferencia',
+    icon: Landmark,
+    clase: 'bg-violet-100 text-violet-800',
+  },
+}
+
 // Para que la búsqueda ignore mayúsculas y tildes
 const normalizar = (texto) =>
   String(texto ?? '')
@@ -36,7 +52,8 @@ const normalizar = (texto) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
 
-// SQLite guarda la fecha en UTC como "2026-11-16 21:14:00"
+// SQLite guardaba la fecha en UTC como "2026-11-16 21:14:00"; el servidor
+// actual devuelve el mismo formato.
 const formatearFecha = (valor) => {
   const fecha = new Date(`${String(valor).replace(' ', 'T')}Z`)
   if (Number.isNaN(fecha.getTime())) return valor
@@ -52,6 +69,15 @@ const numeroWhatsApp = (telefono) => {
 const enlaceCliente = (c) =>
   `https://wa.me/${numeroWhatsApp(c.telefono)}?text=${encodeURIComponent(
     `Hola ${c.nombre}, te escribimos de BuildTech por tu cotización #${c.id}.`,
+  )}`
+
+// "Cra 10 # 20-30, Medellín, Antioquia" (omite lo que esté vacío)
+const ubicacionDe = (c) =>
+  [c.direccion, c.ciudad, c.departamento].filter(Boolean).join(', ')
+
+const enlaceMapa = (c) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${ubicacionDe(c)}, Colombia`,
   )}`
 
 // ---------- Pantalla de acceso ----------
@@ -114,6 +140,8 @@ function Acceso({ aviso, onEntrar }) {
 // ---------- Tarjeta de una cotización ----------
 function TarjetaCotizacion({ cotizacion: c, abierta, guardando, onAlternar, onEstado }) {
   const estado = estadoDe(c.estado)
+  const pago = PAGOS[c.metodo_pago]
+  const ubicacion = ubicacionDe(c)
 
   return (
     <li className="overflow-hidden rounded-2xl bg-white text-slate-800 shadow-lg">
@@ -124,17 +152,50 @@ function TarjetaCotizacion({ cotizacion: c, abierta, guardando, onAlternar, onEs
               Cotización #{c.id} · {formatearFecha(c.creada_en)}
             </p>
             <h3 className="mt-0.5 break-words text-lg font-extrabold">{c.nombre}</h3>
-            <p className="text-sm text-slate-600">
-              {c.telefono}
-              {c.ciudad ? ` · ${c.ciudad}` : ''}
-            </p>
+            <p className="text-sm text-slate-600">{c.telefono}</p>
           </div>
-          <span
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${estado.clase}`}
-          >
-            {estado.etiqueta}
-          </span>
+
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-bold ${estado.clase}`}
+            >
+              {estado.etiqueta}
+            </span>
+            {pago && (
+              <span
+                className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold ${pago.clase}`}
+              >
+                <pago.icon className="h-3.5 w-3.5" />
+                {pago.etiqueta}
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* Datos de entrega (las cotizaciones antiguas pueden no tenerlos) */}
+        {ubicacion && (
+          <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm">
+            <p className="flex items-start gap-2 font-semibold">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
+              <span className="min-w-0 break-words">{ubicacion}</span>
+            </p>
+            {c.descripcion_domicilio && (
+              <p className="mt-1 break-words pl-6 text-slate-600">
+                {c.descripcion_domicilio}
+              </p>
+            )}
+            {c.direccion && (
+              <a
+                href={enlaceMapa(c)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex min-h-9 items-center pl-6 text-sm font-bold text-brand hover:underline"
+              >
+                Ver en el mapa
+              </a>
+            )}
+          </div>
+        )}
 
         <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2">
           <p className="text-2xl font-extrabold text-brand">{formatCOP(c.total)}</p>
@@ -273,12 +334,24 @@ export default function Admin() {
 
   const visibles = useMemo(() => {
     const q = normalizar(busqueda.trim())
-    return cotizaciones.filter(
-      (c) =>
-        (filtro === 'todas' || c.estado === filtro) &&
-        (!q ||
-          normalizar(`${c.id} ${c.nombre} ${c.telefono} ${c.ciudad}`).includes(q)),
-    )
+    return cotizaciones.filter((c) => {
+      if (filtro !== 'todas' && c.estado !== filtro) return false
+      if (!q) return true
+
+      const texto = normalizar(
+        [
+          c.id,
+          c.nombre,
+          c.telefono,
+          c.direccion,
+          c.ciudad,
+          c.departamento,
+          c.descripcion_domicilio,
+          PAGOS[c.metodo_pago]?.etiqueta,
+        ].join(' '),
+      )
+      return texto.includes(q)
+    })
   }, [cotizaciones, filtro, busqueda])
 
   // ---------- Sin sesión ----------
@@ -341,7 +414,7 @@ export default function Admin() {
             type="search"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar por nombre, teléfono, ciudad o número…"
+            placeholder="Buscar por nombre, teléfono, dirección, ciudad, pago o número…"
             className="min-h-12 w-full rounded-xl border border-slate-300 bg-white py-2 pl-12 pr-4 text-slate-800 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30"
           />
         </label>

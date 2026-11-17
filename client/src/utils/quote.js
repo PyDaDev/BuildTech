@@ -18,10 +18,22 @@ const PRESUPUESTOS = {
   '5M+': 'Más de $5.000.000',
 }
 
+export const METODOS_PAGO = {
+  efectivo: 'Efectivo',
+  transferencia: 'Transferencia',
+}
+
 const lineasCliente = (cliente) => [
   `Cliente: ${cliente.nombre}`,
   `Teléfono: ${cliente.telefono}`,
-  cliente.ciudad ? `Ciudad: ${cliente.ciudad}` : null,
+  '',
+  '*Datos de entrega*',
+  `Dirección: ${cliente.direccion}`,
+  `Ciudad: ${cliente.ciudad}`,
+  `Departamento: ${cliente.departamento}`,
+  `Descripción del domicilio: ${cliente.descripcion}`,
+  '',
+  `*Método de pago:* ${METODOS_PAGO[cliente.pago] ?? cliente.pago}`,
 ]
 
 const lineasComponentes = (pc) => [

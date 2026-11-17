@@ -29,9 +29,11 @@ export default function Home() {
         {/* Imagen del PC */}
         <div className="flex justify-center">
           <img
-            src="/pc-hero.png"
-            alt="Computador gamer BuildTech"
-            className="max-h-72 w-auto object-contain drop-shadow-[0_0_40px_rgba(124,77,255,0.5)] sm:max-h-96"
+            src="/pc-hero.svg"
+            alt="Computador gamer BuildTech con ventiladores RGB"
+            width="400"
+            height="470"
+            className="max-h-72 w-auto object-contain sm:max-h-96"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         </div>

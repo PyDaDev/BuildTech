@@ -84,9 +84,11 @@ export default function Recommendation() {
             {/* Imagen */}
             <div className="flex justify-center rounded-2xl bg-night p-3 sm:p-4">
               <img
-                src="/pc-hero.png"
+                src="/pc-hero.svg"
                 alt="PC recomendado"
-                className="max-h-32 w-auto object-contain sm:max-h-48"
+                width="400"
+                height="470"
+                className="max-h-40 w-auto object-contain sm:max-h-56"
                 onError={(e) => (e.currentTarget.style.display = 'none')}
               />
             </div>

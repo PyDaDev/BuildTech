@@ -189,19 +189,22 @@ export default function Landing() {
             </dl>
           </div>
 
-          {/* Imagen del PC (si no existe, se muestra un ícono) */}
-          <div className="flex min-h-48 items-center justify-center">
+          {/* Imagen del PC (si no carga, se muestra un ícono) */}
+          <div className="relative flex min-h-64 items-center justify-center">
+            <div className="pointer-events-none absolute h-64 w-64 rounded-full bg-brand/30 blur-3xl sm:h-80 sm:w-80" />
             {imagenFalla ? (
               <Cpu
-                className="h-40 w-40 text-brand drop-shadow-[0_0_40px_rgba(124,77,255,0.7)] sm:h-56 sm:w-56"
+                className="relative h-40 w-40 text-brand drop-shadow-[0_0_40px_rgba(124,77,255,0.7)] sm:h-56 sm:w-56"
                 strokeWidth={1}
               />
             ) : (
               <img
-                src="/pc-hero.png"
-                alt="Computador gamer BuildTech"
+                src="/pc-hero.svg"
+                alt="Computador gamer BuildTech con ventiladores RGB"
+                width="400"
+                height="470"
                 onError={() => setImagenFalla(true)}
-                className="max-h-72 w-auto object-contain drop-shadow-[0_0_40px_rgba(124,77,255,0.5)] sm:max-h-96"
+                className="relative max-h-80 w-auto object-contain sm:max-h-[28rem]"
               />
             )}
           </div>

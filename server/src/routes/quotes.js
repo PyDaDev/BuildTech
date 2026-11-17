@@ -5,11 +5,13 @@ import { requireAdmin } from '../middleware/auth.js'
 const router = Router()
 
 export const ESTADOS = ['nueva', 'contactada', 'cerrada', 'descartada']
+export const METODOS_PAGO = ['efectivo', 'transferencia']
 
 const ID_MAXIMO = 2_147_483_647
 
 const COLUMNAS = `
-  id, nombre, telefono, ciudad, total, cantidad_items, mensaje, estado,
+  id, nombre, telefono, direccion, ciudad, departamento, descripcion_domicilio,
+  metodo_pago, total, cantidad_items, mensaje, estado,
   to_char(creada_en AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') AS creada_en
 `
 
@@ -17,10 +19,10 @@ const COLUMNAS = `
 const manejar = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next)
 
-const textoValido = (valor, min, max) =>
-  typeof valor === 'string' &&
-  valor.trim().length >= min &&
-  valor.trim().length <= max
+// Devuelve el texto recortado, o '' si no es una cadena
+const texto = (valor) => (typeof valor === 'string' ? valor.trim() : '')
+
+const largoValido = (valor, min, max) => valor.length >= min && valor.length <= max
 
 // ---------- Crear cotización (público) ----------
 router.post(
@@ -28,19 +30,42 @@ router.post(
   manejar(async (req, res) => {
     const { cliente, total, cantidad, mensaje } = req.body ?? {}
 
-    if (!textoValido(cliente?.nombre, 2, 80)) {
+    const nombre = texto(cliente?.nombre)
+    const telefono = texto(cliente?.telefono)
+    const direccion = texto(cliente?.direccion)
+    const departamento = texto(cliente?.departamento)
+    const ciudad = texto(cliente?.ciudad)
+    const descripcion = texto(cliente?.descripcion)
+    const pago = texto(cliente?.pago)
+    const detalle = texto(mensaje)
+
+    if (!largoValido(nombre, 2, 80)) {
       return res.status(400).json({ error: 'El nombre no es válido.' })
     }
 
-    const telefono = typeof cliente?.telefono === 'string' ? cliente.telefono.trim() : ''
     const digitos = telefono.replace(/\D/g, '')
     if (digitos.length < 7 || telefono.length > 20) {
       return res.status(400).json({ error: 'El teléfono no es válido.' })
     }
 
-    const ciudad = typeof cliente?.ciudad === 'string' ? cliente.ciudad.trim() : ''
-    if (ciudad.length > 80) {
-      return res.status(400).json({ error: 'La ciudad es demasiado larga.' })
+    if (!largoValido(direccion, 5, 150)) {
+      return res.status(400).json({ error: 'La dirección es obligatoria.' })
+    }
+    if (!largoValido(departamento, 3, 40)) {
+      return res.status(400).json({ error: 'El departamento es obligatorio.' })
+    }
+    if (!largoValido(ciudad, 2, 80)) {
+      return res.status(400).json({ error: 'La ciudad es obligatoria.' })
+    }
+    if (!largoValido(descripcion, 10, 300)) {
+      return res
+        .status(400)
+        .json({ error: 'La descripción del domicilio es obligatoria (mínimo 10 caracteres).' })
+    }
+    if (!METODOS_PAGO.includes(pago)) {
+      return res
+        .status(400)
+        .json({ error: 'El método de pago debe ser efectivo o transferencia.' })
     }
 
     if (!Number.isInteger(total) || total < 0 || total > 1_000_000_000) {
@@ -49,17 +74,30 @@ router.post(
     if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 100) {
       return res.status(400).json({ error: 'La cantidad no es válida.' })
     }
-    if (!textoValido(mensaje, 1, 6000)) {
+    if (!largoValido(detalle, 1, 10000)) {
       return res
         .status(400)
         .json({ error: 'El detalle de la cotización no es válido.' })
     }
 
     const { rows } = await db.query(
-      `INSERT INTO quotes (nombre, telefono, ciudad, total, cantidad_items, mensaje)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO quotes
+         (nombre, telefono, direccion, departamento, ciudad,
+          descripcion_domicilio, metodo_pago, total, cantidad_items, mensaje)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
        RETURNING id`,
-      [cliente.nombre.trim(), telefono, ciudad || null, total, cantidad, mensaje.trim()],
+      [
+        nombre,
+        telefono,
+        direccion,
+        departamento,
+        ciudad,
+        descripcion,
+        pago,
+        total,
+        cantidad,
+        detalle,
+      ],
     )
 
     res.status(201).json({ id: rows[0].id })
