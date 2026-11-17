@@ -95,7 +95,7 @@ function Acceso({ aviso, onEntrar }) {
             value={clave}
             onChange={(e) => setClave(e.target.value)}
             autoComplete="current-password"
-            placeholder="Tu ADMIN_TOKEN"
+            placeholder="Ingresa la contraseña"
             className="mt-1 min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 font-normal text-slate-800 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30"
           />
         </label>
