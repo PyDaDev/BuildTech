@@ -4,9 +4,9 @@
 
 BuildTech es un sitio web de venta de computadores con un **asistente paso a paso** que recomienda y personaliza el PC ideal según el uso y el presupuesto. Incluye carrito de compras, sección de periféricos y cotización por WhatsApp. Diseño responsivo, pensado para abrirse desde el celular.
 
-> Proyecto universitario en desarrollo. Los precios y datos de contacto son ficticios o referenciales.
+> Proyecto de mostrario en desarrollo. Los precios y datos de contacto son ficticios o referenciales.
 
-🔗 **Sitio en vivo:** _(https://build-tech-opal.vercel.app/)_
+🔗 **Sitio en vivo:** _(https://build-tech-git-main-py-da-corp.vercel.app)_
 
 ## ✨ Características
 
