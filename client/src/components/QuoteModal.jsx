@@ -51,6 +51,9 @@ function validar(f) {
     errores.descripcion = 'Describe el domicilio (mínimo 10 caracteres).'
   }
   if (!f.pago) errores.pago = 'Elige cómo vas a pagar.'
+  if (!f.acepta) {
+    errores.acepta = 'Debes aceptar la política de tratamiento de datos para continuar.'
+  }
 
   return errores
 }
@@ -64,6 +67,7 @@ export default function QuoteModal({ total, onClose, onSubmit }) {
     ciudad: '',
     descripcion: '',
     pago: '',
+    acepta: false,
   })
   const [errores, setErrores] = useState({})
   const [enviado, setEnviado] = useState(false)
@@ -109,6 +113,7 @@ export default function QuoteModal({ total, onClose, onSubmit }) {
       ciudad: form.ciudad.trim(),
       descripcion: form.descripcion.trim(),
       pago: form.pago,
+      acepta: true,
     })
     setEnviado(true)
   }
@@ -335,6 +340,41 @@ export default function QuoteModal({ total, onClose, onSubmit }) {
               </div>
               <Error id="error-pago">{errores.pago}</Error>
             </fieldset>
+
+            {/* ---------- Autorización de datos ---------- */}
+            <div>
+              <label
+                className={`flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border p-3 text-sm ${
+                  errores.acepta
+                    ? 'border-red-300 bg-red-50'
+                    : 'border-slate-200'
+                }`}
+              >
+                <input
+                  id="campo-acepta"
+                  type="checkbox"
+                  checked={form.acepta}
+                  onChange={(e) => cambiar('acepta', e.target.checked)}
+                  aria-invalid={Boolean(errores.acepta)}
+                  aria-describedby={errores.acepta ? 'error-acepta' : undefined}
+                  className="mt-0.5 h-5 w-5 shrink-0 accent-brand"
+                />
+                <span>
+                  Autorizo el tratamiento de mis datos personales para gestionar
+                  esta cotización y la entrega, según la{' '}
+                  <a
+                    href="/privacidad"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-brand underline"
+                  >
+                    política de tratamiento de datos
+                  </a>
+                  .
+                </span>
+              </label>
+              <Error id="error-acepta">{errores.acepta}</Error>
+            </div>
 
             {Object.keys(errores).length > 0 && (
               <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">

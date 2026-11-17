@@ -40,7 +40,7 @@ pool.on('error', (err) => {
   console.error('Error en una conexión inactiva de la base de datos:', err.message)
 })
 
-// Crea la tabla si no existe y agrega las columnas de entrega y pago
+// Crea la tabla si no existe y agrega las columnas de entrega, pago y consentimiento
 export async function iniciarDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS quotes (
@@ -62,7 +62,8 @@ export async function iniciarDb() {
       ADD COLUMN IF NOT EXISTS direccion             TEXT,
       ADD COLUMN IF NOT EXISTS departamento          TEXT,
       ADD COLUMN IF NOT EXISTS descripcion_domicilio TEXT,
-      ADD COLUMN IF NOT EXISTS metodo_pago           TEXT
+      ADD COLUMN IF NOT EXISTS metodo_pago           TEXT,
+      ADD COLUMN IF NOT EXISTS consentimiento_en     TIMESTAMPTZ
   `)
 }
 

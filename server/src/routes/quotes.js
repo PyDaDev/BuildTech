@@ -67,6 +67,11 @@ router.post(
         .status(400)
         .json({ error: 'El método de pago debe ser efectivo o transferencia.' })
     }
+    if (cliente?.acepta !== true) {
+      return res.status(400).json({
+        error: 'Debes aceptar la política de tratamiento de datos personales.',
+      })
+    }
 
     if (!Number.isInteger(total) || total < 0 || total > 1_000_000_000) {
       return res.status(400).json({ error: 'El total no es válido.' })
@@ -83,8 +88,9 @@ router.post(
     const { rows } = await db.query(
       `INSERT INTO quotes
          (nombre, telefono, direccion, departamento, ciudad,
-          descripcion_domicilio, metodo_pago, total, cantidad_items, mensaje)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          descripcion_domicilio, metodo_pago, consentimiento_en,
+          total, cantidad_items, mensaje)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, now(), $8, $9, $10)
        RETURNING id`,
       [
         nombre,
