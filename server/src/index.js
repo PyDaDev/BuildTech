@@ -2,6 +2,7 @@ import 'dotenv/config' // debe ir primero para que .env esté cargado antes que 
 import express from 'express'
 import cors from 'cors'
 import rateLimit from 'express-rate-limit'
+import { iniciarDb } from './db.js'
 import quotesRouter from './routes/quotes.js'
 
 const app = express()
@@ -9,7 +10,7 @@ const PORT = Number(process.env.PORT) || 3001
 
 const origenes = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => o.trim().replace(/\/$/, ''))
   .filter(Boolean)
 
 app.disable('x-powered-by')
@@ -44,6 +45,12 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Error interno del servidor.' })
 })
 
-app.listen(PORT, () => {
-  console.log(`API de BuildTech escuchando en http://localhost:${PORT}`)
-})
+try {
+  await iniciarDb()
+  app.listen(PORT, () => {
+    console.log(`API de BuildTech escuchando en http://localhost:${PORT}`)
+  })
+} catch (err) {
+  console.error('No se pudo conectar con la base de datos:', err.message)
+  process.exit(1)
+}
