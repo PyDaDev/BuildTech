@@ -6,7 +6,7 @@ BuildTech es un sitio web de venta de computadores con un **asistente paso a pas
 
 > Proyecto de mostrario en desarrollo. Los precios y datos de contacto son ficticios o referenciales.
 
-🔗 **Sitio en vivo:** _(https://build-tech-git-main-py-da-corp.vercel.app)_
+🔗 **Sitio en vivo:** _(https://build-tech-git-main-py-da-corp.vercel.app?_vercel_share=bVY824KedTw233CotM6wZAY3sF77rjSE)_
 
 ## ✨ Características
 
